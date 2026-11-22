@@ -13,7 +13,8 @@ SELECT *
 FROM issues
 WHERE team_id = $1
   AND archived_at IS NULL
-ORDER BY created_at DESC, id DESC;
+ORDER BY created_at DESC, id DESC
+LIMIT sqlc.arg(page_limit) OFFSET sqlc.arg(page_offset);
 
 -- name: UpdateIssue :one
 UPDATE issues

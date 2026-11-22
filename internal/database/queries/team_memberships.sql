@@ -10,10 +10,18 @@ WHERE team_id = $1
   AND user_id = $2;
 
 -- name: ListTeamMembers :many
-SELECT *
-FROM team_memberships
-WHERE team_id = $1
-ORDER BY joined_at, user_id;
+SELECT m.team_id,
+       m.user_id,
+       m.role,
+       m.joined_at,
+       u.email,
+       u.display_name,
+       u.avatar_url
+FROM team_memberships m
+JOIN users u ON u.id = m.user_id
+WHERE m.team_id = $1
+ORDER BY m.joined_at, m.user_id
+LIMIT sqlc.arg(page_limit) OFFSET sqlc.arg(page_offset);
 
 -- name: UpdateTeamMemberRole :one
 UPDATE team_memberships
@@ -22,7 +30,12 @@ WHERE team_id = $1
   AND user_id = $2
 RETURNING *;
 
+-- The owner's membership row cannot be deleted: teams_owner_membership_fk
+-- would fail at commit. Transfer ownership before removing the owner.
 -- name: DeleteTeamMembership :execrows
-DELETE FROM team_memberships
-WHERE team_id = $1
-  AND user_id = $2;
+DELETE FROM team_memberships m
+USING teams t
+WHERE m.team_id = $1
+  AND m.user_id = $2
+  AND t.id = m.team_id
+  AND t.owner_user_id <> m.user_id;

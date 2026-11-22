@@ -16,7 +16,8 @@ WHERE email = $1;
 -- name: ListUsers :many
 SELECT *
 FROM users
-ORDER BY created_at DESC, id DESC;
+ORDER BY created_at DESC, id DESC
+LIMIT sqlc.arg(page_limit) OFFSET sqlc.arg(page_offset);
 
 -- name: UpdateUser :one
 UPDATE users
