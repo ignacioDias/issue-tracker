@@ -36,6 +36,6 @@ SET revoked_at = now()
 WHERE user_id = $1
   AND revoked_at IS NULL;
 
--- name: DeleteExpiredSessions :execrows
+-- name: DeleteInactiveSessions :execrows
 DELETE FROM sessions
 WHERE expires_at <= now() OR revoked_at IS NOT NULL;
