@@ -31,7 +31,7 @@ func NewDatabase(ctx context.Context, connString string) (*Database, error) {
 		Pool:    pool,
 		Queries: sqlc.New(pool),
 	}
-	if err := db.migrate(); err != nil {
+	if err := db.Migrate(); err != nil {
 		db.Close()
 		return nil, err
 	}
