@@ -20,8 +20,10 @@ SELECT m.team_id,
 FROM team_memberships m
 JOIN users u ON u.id = m.user_id
 WHERE m.team_id = $1
+  AND (sqlc.narg(cursor_joined_at)::timestamptz IS NULL
+       OR (m.joined_at, m.user_id) > (sqlc.narg(cursor_joined_at)::timestamptz, sqlc.narg(cursor_user_id)::uuid))
 ORDER BY m.joined_at, m.user_id
-LIMIT sqlc.arg(page_limit) OFFSET sqlc.arg(page_offset);
+LIMIT sqlc.arg(page_limit);
 
 -- name: UpdateTeamMemberRole :one
 UPDATE team_memberships

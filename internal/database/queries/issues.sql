@@ -13,8 +13,10 @@ SELECT *
 FROM issues
 WHERE team_id = $1
   AND archived_at IS NULL
+  AND (sqlc.narg(cursor_created_at)::timestamptz IS NULL
+       OR (created_at, id) < (sqlc.narg(cursor_created_at)::timestamptz, sqlc.narg(cursor_id)::uuid))
 ORDER BY created_at DESC, id DESC
-LIMIT sqlc.arg(page_limit) OFFSET sqlc.arg(page_offset);
+LIMIT sqlc.arg(page_limit);
 
 -- name: UpdateIssue :one
 UPDATE issues

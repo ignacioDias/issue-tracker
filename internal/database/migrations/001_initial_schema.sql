@@ -99,8 +99,14 @@ CREATE TABLE IF NOT EXISTS team_memberships (
 CREATE INDEX IF NOT EXISTS team_memberships_user_idx
     ON team_memberships (user_id);
 
+CREATE INDEX IF NOT EXISTS team_memberships_team_joined_idx
+    ON team_memberships (team_id, joined_at, user_id);
+
 CREATE INDEX IF NOT EXISTS teams_created_by_idx
     ON teams (created_by);
+
+CREATE INDEX IF NOT EXISTS users_created_idx
+    ON users (created_at DESC, id DESC);
 
 -- The team's owner must also be one of its members.
 -- Deferred because team and membership are inserted in one transaction.
