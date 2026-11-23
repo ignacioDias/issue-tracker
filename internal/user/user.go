@@ -17,6 +17,15 @@ type User struct {
 	UpdatedAt   time.Time `json:"updatedAt" db:"updated_at" validate:"required,gtefield=CreatedAt"`
 }
 
+type GoogleUser struct {
+	ID            string `json:"sub"`
+	Email         string `json:"email"`
+	EmailVerified bool   `json:"email_verified"`
+	FirstName     string `json:"given_name"`
+	LastName      string `json:"family_name"`
+	AvatarURL     string `json:"picture"`
+}
+
 var validate = newValidator()
 
 func newValidator() *validator.Validate {
@@ -31,4 +40,19 @@ func newValidator() *validator.Validate {
 // Validate checks the User against the same rules the database enforces.
 func (u *User) Validate() error {
 	return validate.Struct(u)
+}
+
+func FromGoogleUserToUser(g *GoogleUser) (*User, error) {
+	user := &User{
+		ID:          g.ID,
+		Email:       g.Email,
+		DisplayName: g.FirstName + " " + g.LastName,
+		AvatarURL:   &g.AvatarURL,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+	if err := user.Validate(); err != nil {
+		return nil, err
+	}
+	return user, nil
 }
