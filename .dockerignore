@@ -1,0 +1,10 @@
+.git
+.agents
+.env
+.env.*
+!.env.example
+Dockerfile
+docker-compose.yml
+*.test
+*.out
+coverage.*
